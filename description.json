@@ -1,6 +1,16 @@
 {
    "allow_add_mods" : true,
    "custom_icons" : false,
+   "dependencies" : [
+      {
+         "fileId" : 2504530003,
+         "localId" : "40639a2c-bb9f-4d4f-b88c-41bfe264ffa8"
+      },
+      {
+         "fileId" : 2791874023,
+         "localId" : "5a081817-b141-4439-987f-a25162d125fd"
+      }
+   ],
    "description" : "This mod doesn't have a description",
    "localId" : "9bc6c720-b6b2-4883-9251-571de93b9e7a",
    "name" : "Command Injector",
