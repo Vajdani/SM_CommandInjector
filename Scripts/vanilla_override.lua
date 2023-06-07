@@ -27,6 +27,7 @@ for k, gclass in pairs(gameClasses) do
         end
 
         gclass["cl_onCustomCommand"] = function (self, params)
+            params.player = sm.localPlayer.getPlayer()
             local name = params[1]
             for _k, data in pairs(addedCommands) do
                 if data.name == name then
@@ -34,9 +35,8 @@ for k, gclass in pairs(gameClasses) do
                     local sandbox = data.sandbox
                     if not sandbox or sandbox == "client" then
                         local func, err = sm.luavm.loadstring(data.code)
-                        if func then func(params, sm.localPlayer.getPlayer()) end
+                        if func then func(params) end
                     else
-                        params.player = sm.localPlayer.getPlayer()
                         self.network:sendToServer(
                             "sv_onCustomCommand",
                             {
