@@ -4,8 +4,8 @@ Injector = class()
 dofile("$CONTENT_40639a2c-bb9f-4d4f-b88c-41bfe264ffa8/Scripts/ModDatabase.lua")
 
 local fileExists = sm.json.fileExists
-addedCommands = {}
 local function GetCommandSets()
+    local addedCommands = {}
     for uuid, desc in pairs(ModDatabase.databases.descriptions) do
         if desc.type == "Blocks and Parts" then
             local key = "$CONTENT_"..uuid
@@ -13,39 +13,32 @@ local function GetCommandSets()
             if success == true and exists == true then
                 local commands = key.."/commands.json"
                 if fileExists(commands) then
-                    addedCommands[#addedCommands+1] = sm.json.open(commands)
+                    for k, data in pairs(sm.json.open(commands)) do
+                        addedCommands[#addedCommands+1] = data
+                    end
                     print("[Command Injector] Found commands in "..desc.name.."!")
                 end
             end
         end
     end
+
+    return addedCommands
 end
 
 
-
-local commandFunction = nil
-local oldBind = sm.game.bindChatCommand
-function bindHook(name, params, func, help)
-    if commandFunction == nil and func ~= nil then
-        commandFunction = func
-    end
-
-    return oldBind(name, params, func, help)
-end
-sm.game.bindChatCommand = bindHook
 
 local gameHooked = false
 local oldTime = sm.game.setTimeOfDay
 function timeHook(time)
-    if not gameHooked and commandFunction and ModDatabase.databases.descriptions == nil then
+    if not gameHooked and ModDatabase.databases.descriptions == nil then
         print("[Command Injector] Loading commands!")
+        dofile "$CONTENT_9bc6c720-b6b2-4883-9251-571de93b9e7a/Scripts/vanilla_override.lua"
         ModDatabase.loadDescriptions()
 
-        GetCommandSets()
-        for k, set in pairs(addedCommands) do
-            for _k, command in pairs(set) do
-                sm.game.bindChatCommand( command.name, command.params, commandFunction, command.help or "" )
-            end
+        local commands = GetCommandSets()
+        sm.event.sendToGame("cl_setCommandData", commands)
+        for k, command in pairs(commands) do
+            sm.game.bindChatCommand( command.name, command.params or {}, "cl_onCustomCommand", command.help or "" )
         end
 
         ModDatabase.unloadDescriptions()
