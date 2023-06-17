@@ -1,9 +1,6 @@
 ---@class Injector : ToolClass
 Injector = class()
 
-dofile("$CONTENT_40639a2c-bb9f-4d4f-b88c-41bfe264ffa8/Scripts/ModDatabase.lua")
-
-local fileExists = sm.json.fileExists
 local commands = {
     ["/test"] = {
         callback = "cl_cmd_test",
@@ -24,7 +21,7 @@ local commands = {
 local gameHooked = false
 local oldTime = sm.game.setTimeOfDay
 function timeHook(time)
-    if not gameHooked and ModDatabase.databases.descriptions == nil then
+    if not gameHooked then
         print("[Command Injector] Loading commands!")
         dofile "$CONTENT_9bc6c720-b6b2-4883-9251-571de93b9e7a/Scripts/vanilla_override.lua"
 
