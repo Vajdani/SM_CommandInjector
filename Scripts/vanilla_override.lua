@@ -6,58 +6,31 @@ local gameClasses = {
     Game
 }
 
-addedFunctions = {}
-
 for k, gclass in pairs(gameClasses) do
     if gclass then
-        gclass["cl_setCommandData"] = function(self, data)
-            addedCommands = data
-
-            --[[for _k, command in pairs(data) do
-                local functions = command.functions
-                if functions then
-                    for __k, _function in pairs(functions) do
-                        gclass[_function.name] = function(self)
-                            local func, err = sm.luavm.loadstring(_function.code)
-                            if func then func() end
-                        end
-                    end
-                end
-            end]]
+        gclass["cl_cmd_test"] = function(self)
+            print("BALLS!!!")
         end
 
-        gclass["cl_onCustomCommand"] = function (self, params)
-            params.player = sm.localPlayer.getPlayer()
-            local name = params[1]
-            for _k, data in pairs(addedCommands) do
-                if data.name == name then
-                    print("[Command Injector] Executing command '"..name.."'...")
-                    local sandbox = data.sandbox
-                    if not sandbox or sandbox == "client" then
-                        local func, err = sm.luavm.loadstring(data.code)
-                        if func then func(params) end
-                    else
-                        self.network:sendToServer(
-                            "sv_onCustomCommand",
-                            {
-                                command = data,
-                                params = params
-                            }
-                        )
-                    end
-
-                    break
-                end
-            end
+        gclass["cl_cmd_togglefly"] = function(self)
+            self.network:sendToServer("sv_cmd_togglefly")
         end
 
-        gclass["sv_onCustomCommand"] = function (self, args)
-            local func, err = sm.luavm.loadstring(args.command.code)
-            if func then
-                func(args.params)
-                print("[Command Injector] Command successfully executed!")
-            else
-                print("[Command Injector] Executing command failed! Please check your code for errors.")
+        gclass["sv_cmd_togglefly"] = function(self, args, player)
+            local char = player.character
+            char:setSwimming(not char:isSwimming())
+        end
+
+        gclass["cl_cmd_explode"] = function(self)
+            self.network:sendToServer("sv_cmd_explode")
+        end
+
+        gclass["sv_cmd_explode"] = function(self, args, player)
+            local char = player.character
+            local pos = char.worldPosition
+            local hit, result = sm.physics.raycast(pos, pos + char.direction * 1000)
+            if hit then
+                sm.physics.explode(result.pointWorld, 10, 10, 10, 10, 'PropaneTank - ExplosionBig')
             end
         end
 
