@@ -1,0 +1,26 @@
+[
+    {
+        "name": "/test",
+        "help": "Test command",
+        "code": "print('BALLS')"
+    },
+    {
+        "name": "/setfly",
+        "help": "Toggle fly mode and set the movement speed",
+        "sandbox": "server",
+        "code": "local player; for k, v in pairs(...) do if type(v) == 'Player' then player = v; break; end end; local char = player.character; char:setSwimming(not char:isSwimming())"
+    },
+    {
+        "name": "/explodeAt",
+        "help": "Create explosion at the aim positino",
+        "sandbox": "server",
+        //"functions": [
+        //    {
+        //        "name": "sv_explodeAt",
+        //        "code": "local player; for k, v in pairs(...) do local _type = type(v); if _type == 'Player' then player = v end end; local char = player.character; local pos = char.worldPosition; local hit, result = sm.physics.raycast(pos, pos + char.direction * 1000); if hit then sm.physics.explode(result.pointWorld, 10, 10, 10, 10, 'PropaneTank - ExplosionBig') end"
+        //    }
+        //],
+        //"code": "self:sv_explodeAt()"
+        "code": "print('wee explode')"
+    }
+]
